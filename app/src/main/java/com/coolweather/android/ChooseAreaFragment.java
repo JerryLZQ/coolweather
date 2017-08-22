@@ -2,7 +2,6 @@ package com.coolweather.android;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,19 +12,15 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.coolweather.android.db.City;
 import com.coolweather.android.db.County;
 import com.coolweather.android.db.Province;
 import com.coolweather.android.util.HttpUtil;
 import com.coolweather.android.util.Utility;
-
 import org.litepal.crud.DataSupport;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -59,9 +54,8 @@ public class ChooseAreaFragment extends Fragment {
     private int mCurrentLevel;              //当前被选中的级别
 
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.choose_area, container, false);
 
@@ -76,7 +70,7 @@ public class ChooseAreaFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         // 点击某项
@@ -105,7 +99,9 @@ public class ChooseAreaFragment extends Fragment {
             }
         });
 
+        queryProvinces();   //启动时显示省份信息
     }
+
     // 查询省份信息并显示
     private void queryProvinces(){
         mTitleText.setText("中国");
@@ -130,7 +126,7 @@ public class ChooseAreaFragment extends Fragment {
         mBackButton.setVisibility(View.VISIBLE);    //显示后退按键
         mCityList = DataSupport.where("provinceid = ?", String.valueOf(mSelectedProvince.getId()))
                 .find(City.class);  //从City表查询与当前选中的省份的ID相同的城市列表
-        if(mCityList.size() >= 0){
+        if(mCityList.size() > 0){
             mDataList.clear();
             for (City city : mCityList){
                 mDataList.add(city.getCityName());
@@ -149,7 +145,7 @@ public class ChooseAreaFragment extends Fragment {
         mBackButton.setVisibility(View.VISIBLE);
         mCountyList = DataSupport.where("cityid = ?", String.valueOf(mSelectedCity.getId()))
                 .find(County.class);
-        if(mCountyList.size() >= 0){
+        if(mCountyList.size() > 0){
             mDataList.clear();
             for (County county : mCountyList){
                 mDataList.add(county.getCountyName());
@@ -178,9 +174,9 @@ public class ChooseAreaFragment extends Fragment {
                     //操作是否成功将返回一个boolean
                     result = Utility.handleProvinceResponse(responseText);
                 }else if("city".equals(type)){      //查询城市信息
-                    result = Utility.handleCityResponse(responseText, mSelectedProvince.getId()); //这里的getId应改为getProvinceCode？？？
+                    result = Utility.handleCityResponse(responseText, mSelectedProvince.getId());
                 }else if("county".equals(type)){    //查询县信息
-                    result = Utility.handleCountyResponse(responseText, mSelectedCity.getId());     //同上疑问？
+                    result = Utility.handleCountyResponse(responseText, mSelectedCity.getId());
                 }
 
                 if(result){
