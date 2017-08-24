@@ -1,5 +1,6 @@
 package com.coolweather.android;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.coolweather.android.gson.Forecast;
 import com.coolweather.android.gson.Weather;
+import com.coolweather.android.service.AutoUpdateService;
 import com.coolweather.android.util.HttpUtil;
 import com.coolweather.android.util.Utility;
 import java.io.IOException;
@@ -101,7 +103,7 @@ public class WeatherActivity extends AppCompatActivity {
         if(weatherString != null){
             //本地缓存有weather数据，显示天气信息
             Weather weather = Utility.handleWeatherResponse(weatherString);
-            mWeatherId = weather.basic.weatherId;       //保持当前weatherId;
+            mWeatherId = weather.basic.weatherId;       //保存当前weatherId;
             showWeatherInfo(weather);
         }else{
             //本地缓存没有weather数据，从服务器获得后再显示出来
@@ -217,6 +219,9 @@ public class WeatherActivity extends AppCompatActivity {
 
         weatherLayout.setVisibility(View.VISIBLE);
 
+        //启动自动更新服务
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 
     // 加载 必应 的每日一图 作为背景
